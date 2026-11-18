@@ -50,6 +50,13 @@ jobs:
           name: build-log
           path: build.log
 
+      - name: Report build errors as annotations
+        if: always()
+        run: |
+          if [ -f build.log ]; then
+            echo "::error::BUILDLOG_TAIL_START $(tail -c 3000 build.log | tr '\n' '|' | cut -c1-1500) BUILDLOG_TAIL_END"
+          fi
+
       - name: Upload receiver APK
         uses: actions/upload-artifact@v4
         with:

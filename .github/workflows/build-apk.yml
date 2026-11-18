@@ -1,0 +1,44 @@
+name: Build T3 Auto APKs
+
+on:
+  push:
+    branches: [main, "arena/*"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Gradle + generate wrapper
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.5'
+
+      - name: Generate gradle wrapper (jar not committed)
+        run: gradle wrapper --gradle-version 8.5 --no-daemon
+
+      - name: Build debug APKs
+        run: gradle assembleDebug --no-daemon
+
+      - name: Upload receiver APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: t3-auto-receiver
+          path: receiver/build/outputs/apk/debug/*.apk
+
+      - name: Upload launcher APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: t3-car-launcher
+          path: launcher/build/outputs/apk/debug/*.apk

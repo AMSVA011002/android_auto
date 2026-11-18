@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">T3 Car Launcher</string>
+    <string name="tile_receiver">Auto Receiver</string>
+    <string name="tile_nav">Navigate</string>
+    <string name="tile_music">Music</string>
+    <string name="tile_phone">Phone</string>
+    <string name="tile_radio">Radio</string>
+    <string name="tile_apps">All apps</string>
+    <string name="tile_wifi">Wi-Fi</string>
+    <string name="tile_bt">Bluetooth</string>
+    <string name="tile_hotspot">Hotspot</string>
+    <string name="tile_brightness">Brightness</string>
+    <string name="phone_connected">Phone connected — opening receiver…</string>
+    <string name="phone_disconnected">Phone disconnected</string>
+</resources>

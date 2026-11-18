@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- USB devices that should auto-open the receiver.
+     VID list: Google, Samsung, Apple, Huawei, Xiaomi, OnePlus, generic
+     Android Auto / Carlinkit dongles. Add your phone's VID if missing. -->
+<resources>
+    <!-- Google (Pixel / Nexus) -->
+    <usb-device vendor-id="6353" />
+    <!-- Samsung -->
+    <usb-device vendor-id="1250" />
+    <!-- Apple (iPhone — charging / audio; CarPlay needs a dongle, see README) -->
+    <usb-device vendor-id="1452" />
+    <!-- Huawei -->
+    <usb-device vendor-id="4817" />
+    <!-- Xiaomi -->
+    <usb-device vendor-id="10007" />
+    <!-- OnePlus -->
+    <usb-device vendor-id="10864" />
+    <!-- Carlinkit / generic Android Auto & CarPlay dongles -->
+    <usb-device vendor-id="19779" />
+    <usb-device vendor-id="12345" />
+    <!-- Generic catch-all for any USB device (uncomment if your phone is missing):
+    <usb-device /> -->
+</resources>

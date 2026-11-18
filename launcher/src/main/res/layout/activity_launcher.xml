@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Car launcher dashboard — 1024x600 landscape, big tiles for driving.
+     Top: clock + connection status. Middle: 3x2 app tiles. Bottom: quick toggles. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg_dark"
+    android:padding="12dp">
+
+    <!-- Top bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/bg_card"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/clockText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="--:--"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary" />
+
+        <TextView
+            android:id="@+id/dateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="—"
+            android:textSize="16sp"
+            android:textColor="@color/text_secondary" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/connText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No phone"
+            android:textSize="16sp"
+            android:textColor="@color/text_secondary" />
+    </LinearLayout>
+
+    <!-- App tiles (3 columns x 2 rows) -->
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="12dp"
+        android:layout_weight="1"
+        android:columnCount="3"
+        android:rowCount="2"
+        android:useDefaultMargins="true">
+
+        <Button
+            android:id="@+id/tileReceiver"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:text="@string/tile_receiver"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/tileNav"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:text="@string/tile_nav"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/tileMusic"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:text="@string/tile_music"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/tilePhone"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:text="@string/tile_phone"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/tileRadio"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:text="@string/tile_radio"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/tileApps"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:text="@string/tile_apps"
+            android:textSize="18sp" />
+    </GridLayout>
+
+    <!-- Quick toggles -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/toggleWifi"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:text="@string/tile_wifi"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/toggleBt"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:text="@string/tile_bt"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/toggleHotspot"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:text="@string/tile_hotspot"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/toggleBrightness"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/tile_brightness"
+            android:textSize="14sp" />
+    </LinearLayout>
+</LinearLayout>

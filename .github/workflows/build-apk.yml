@@ -38,7 +38,17 @@ jobs:
         run: gradle wrapper --gradle-version 8.5 --no-daemon
 
       - name: Build debug APKs
-        run: gradle assembleDebug --no-daemon
+        run: |
+          set +e
+          gradle assembleDebug --no-daemon --stacktrace 2>&1 | tee build.log
+          exit ${PIPESTATUS[0]}
+
+      - name: Upload build log (for debugging)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
 
       - name: Upload receiver APK
         uses: actions/upload-artifact@v4

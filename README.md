@@ -47,15 +47,20 @@ gradle wrapper --gradle-version 8.5
 # → app/build/outputs/apk/debug/app-debug.apk
 ```
 
-### Option C — GitHub Actions (no local setup)
+### Option C — Prebuilt APK (no setup at all)
 
-Push to this repo (or run the workflow manually) — the `Build T3 Auto APK`
-workflow builds one APK and uploads it as the `t3-auto` artifact.
+The latest build is checked in at [`build-output/t3-auto-debug.apk`](build-output/t3-auto-debug.apk)
+and mirrored to Google Drive:
+<https://drive.google.com/file/d/1gbC5I-WWYdas3ycHrKetjQwejj7rVQ24/view>
+
+It is also produced on every push by the `Build T3 Auto APK` workflow
+(`t3-auto` artifact).
 
 ## Install on the T3 head unit
 
 ```bash
-adb install app/build/outputs/apk/debug/app-debug.apk
+# download build-output/t3-auto-debug.apk (or the Drive link above), then:
+adb install t3-auto-debug.apk
 ```
 
 1. Open **T3 Auto** once and grant Bluetooth/location permissions.
@@ -104,6 +109,7 @@ adb reboot
 
 ```
 app/        The single T3 Auto app (dashboard, receiver UI, USB/BT detection)
+build-output/  Built APK, refreshed by CI on every push
 docs/       Device spec + protocol notes
 .github/workflows/build-apk.yml   CI: builds the APK on every push
 ```

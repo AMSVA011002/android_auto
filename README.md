@@ -51,7 +51,7 @@ gradle wrapper --gradle-version 8.5
 
 The latest build is checked in at [`build-output/t3-auto-debug.apk`](build-output/t3-auto-debug.apk)
 and mirrored to Google Drive:
-<https://drive.google.com/file/d/1gbC5I-WWYdas3ycHrKetjQwejj7rVQ24/view>
+<https://drive.google.com/file/d/1ba6msw7LbdJJ4w4WafDO5fxzIJXxwUFz/view>
 
 It is also produced on every push by the `Build T3 Auto APK` workflow
 (`t3-auto` artifact).

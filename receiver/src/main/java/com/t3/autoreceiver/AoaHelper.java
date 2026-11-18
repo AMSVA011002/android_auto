@@ -55,34 +55,56 @@ public final class AoaHelper {
         return list[0];
     }
 
-    /** Opens the accessory and sends the AOA handshake. Returns true on success. */
-    public boolean open() {
+    /**
+     * Performs the AOA handshake on the given device, then opens the accessory
+     * for data. Returns true if the accessory was opened.
+     * Best-effort: phones that don't support AOA simply skip the handshake.
+     */
+    public boolean open(UsbDevice device) {
+        if (usbManager == null) return false;
+        if (device != null) {
+            sendHandshake(device);
+        }
         accessory = getAccessory();
-        if (accessory == null || usbManager == null) return false;
+        if (accessory == null) return false;
         fd = usbManager.openAccessory(accessory);
         if (fd == null) return false;
         FileDescriptor raw = fd.getFileDescriptor();
         input = new FileInputStream(raw);
         output = new FileOutputStream(raw);
-        sendHandshake();
         return true;
     }
 
-    private void sendHandshake() {
-        // AOA handshake: control transfers 51/52 with the identification strings.
-        // Best-effort: if the phone is not in accessory mode this simply no-ops.
+    /** Backwards-compatible no-arg open (handshake skipped). */
+    public boolean open() {
+        return open(null);
+    }
+
+    private void sendHandshake(UsbDevice device) {
+        // AOA handshake: control transfers on the device connection.
+        // NOTE: controlTransfer lives on UsbDeviceConnection, not UsbManager.
+        UsbDeviceConnection conn = null;
         try {
-            usbManager.controlTransfer(0x40, 51, 0, 0, MANUFACTURER.getBytes("UTF-8"), MANUFACTURER.length(), 5000);
-            usbManager.controlTransfer(0x40, 51, 0, 1, MODEL.getBytes("UTF-8"), MODEL.length(), 5000);
-            usbManager.controlTransfer(0x40, 51, 0, 2, DESCRIPTION.getBytes("UTF-8"), DESCRIPTION.length(), 5000);
-            usbManager.controlTransfer(0x40, 51, 0, 3, VERSION.getBytes("UTF-8"), VERSION.length(), 5000);
-            usbManager.controlTransfer(0x40, 51, 0, 4, URI.getBytes("UTF-8"), URI.length(), 5000);
-            usbManager.controlTransfer(0x40, 51, 0, 5, SERIAL.getBytes("UTF-8"), SERIAL.length(), 5000);
+            conn = usbManager.openDevice(device);
+            if (conn == null) return;
+            control(conn, 51, 0, MANUFACTURER);
+            control(conn, 51, 1, MODEL);
+            control(conn, 51, 2, DESCRIPTION);
+            control(conn, 51, 3, VERSION);
+            control(conn, 51, 4, URI);
+            control(conn, 51, 5, SERIAL);
             // Start accessory mode (request 53).
-            usbManager.controlTransfer(0x40, 53, 0, 0, new byte[0], 0, 5000);
+            conn.controlTransfer(0x40, 53, 0, 0, new byte[0], 0, 5000);
         } catch (Exception ignored) {
             // Phone may not support AOA — caller falls back to mirror/BT audio.
+        } finally {
+            try { if (conn != null) conn.close(); } catch (Exception ignored) {}
         }
+    }
+
+    private void control(UsbDeviceConnection conn, int request, int index, String value) throws Exception {
+        byte[] bytes = value.getBytes("UTF-8");
+        conn.controlTransfer(0x40, request, 0, index, bytes, bytes.length, 5000);
     }
 
     /** Reads one chunk from the accessory (blocking, caller should use a thread). */

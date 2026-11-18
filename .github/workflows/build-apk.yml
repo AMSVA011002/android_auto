@@ -54,7 +54,9 @@ jobs:
         if: always()
         run: |
           if [ -f build.log ]; then
-            echo "::error::BUILDLOG_TAIL_START $(tail -c 3000 build.log | tr '\n' '|' | cut -c1-1500) BUILDLOG_TAIL_END"
+            grep -iE "What went wrong|error:|FAILED|Could not|Execution failed|A problem occurred|e: |warning: " build.log | head -40 | while IFS= read -r line; do
+              echo "::error::GRADLEERR: $line"
+            done
           fi
 
       - name: Upload receiver APK

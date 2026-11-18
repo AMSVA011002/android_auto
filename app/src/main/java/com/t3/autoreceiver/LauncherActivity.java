@@ -1,4 +1,4 @@
-package com.t3.carlauncher;
+package com.t3.autoreceiver;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -17,9 +17,11 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * Car launcher dashboard for the 1024x600 head unit.
- * Set as the default HOME app (see README) — it becomes the home screen
- * after every boot, and hands over to the receiver when a phone connects.
+ * Dashboard for the 1024x600 head unit.
+ *
+ * This is NOT a HOME launcher: it opens only when a phone connects
+ * (USB/Bluetooth) and returns to the head unit's default launcher when
+ * the phone disconnects. The built-in launcher always stays the default.
  */
 public class LauncherActivity extends Activity {
 
@@ -38,14 +40,17 @@ public class LauncherActivity extends Activity {
         public void onReceive(Context ctx, Intent intent) {
             if (intent == null) return;
             String a = intent.getAction();
-            if ("com.t3.autoreceiver.PHONE_CONNECTED".equals(a)) {
-                String type = intent.getStringExtra("type");
-                String dev = intent.getStringExtra("device");
+            if (ConnectionMonitor.ACTION_PHONE_CONNECTED.equals(a)) {
+                String type = intent.getStringExtra(ConnectionMonitor.EXTRA_TYPE);
+                String dev = intent.getStringExtra(ConnectionMonitor.EXTRA_DEVICE);
                 connText.setText("Phone: " + (dev == null || dev.isEmpty() ? type : dev));
-                // Hand over to the receiver automatically.
-                openReceiver();
-            } else if ("com.t3.autoreceiver.PHONE_DISCONNECTED".equals(a)) {
+            } else if (ConnectionMonitor.ACTION_PHONE_DISCONNECTED.equals(a)) {
                 connText.setText("No phone");
+                // Dashboard only runs while connected — hand back to the
+                // head unit's default launcher.
+                if (ConnectionMonitor.isReturnHomeEnabled(ctx)) {
+                    goHome();
+                }
             }
         }
     };
@@ -80,8 +85,8 @@ public class LauncherActivity extends Activity {
         super.onResume();
         handler.post(clockTick);
         IntentFilter f = new IntentFilter();
-        f.addAction("com.t3.autoreceiver.PHONE_CONNECTED");
-        f.addAction("com.t3.autoreceiver.PHONE_DISCONNECTED");
+        f.addAction(ConnectionMonitor.ACTION_PHONE_CONNECTED);
+        f.addAction(ConnectionMonitor.ACTION_PHONE_DISCONNECTED);
         registerReceiver(connReceiver, f);
     }
 
@@ -99,15 +104,16 @@ public class LauncherActivity extends Activity {
     }
 
     private void openReceiver() {
+        startActivity(new Intent(this, MainActivity.class));
+    }
+
+    private void goHome() {
         try {
-            Intent i = new Intent("com.t3.autoreceiver.LAUNCH_RECEIVER");
-            i.setPackage("com.t3.autoreceiver");
+            Intent i = new Intent(Intent.ACTION_MAIN);
+            i.addCategory(Intent.CATEGORY_HOME);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
-        } catch (Exception e) {
-            Toast.makeText(this, "Receiver not installed — install T3 Auto Receiver first",
-                    Toast.LENGTH_LONG).show();
-        }
+        } catch (Exception ignored) {}
     }
 
     private void openMaps() {

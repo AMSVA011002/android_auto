@@ -29,9 +29,22 @@ public class ReceiverService extends Service {
         super.onCreate();
         usbReceiver = new UsbReceiver();
         btReceiver = new BluetoothReceiver();
-        registerReceiver(usbReceiver, new IntentFilterCompat().usbFilter());
-        registerReceiver(btReceiver, new IntentFilterCompat().btFilter());
+        register(usbReceiver, new IntentFilterCompat().usbFilter());
+        register(btReceiver, new IntentFilterCompat().btFilter());
         Log.i(TAG, "ReceiverService started");
+    }
+
+    /** Android 13+ needs an explicit export flag for context-registered receivers. */
+    private void register(android.content.BroadcastReceiver r, android.content.IntentFilter f) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(r, f, Context.RECEIVER_EXPORTED);
+            } else {
+                registerReceiver(r, f);
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Could not register " + r.getClass().getSimpleName(), e);
+        }
     }
 
     @Override

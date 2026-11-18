@@ -1,4 +1,4 @@
-package com.t3.carlauncher;
+package com.t3.autoreceiver;
 
 import android.app.Activity;
 import android.content.Intent;

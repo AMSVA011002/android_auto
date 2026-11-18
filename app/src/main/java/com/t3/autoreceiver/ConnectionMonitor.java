@@ -6,10 +6,10 @@ import android.content.SharedPreferences;
 
 /**
  * Tracks the current phone connection (USB or Bluetooth) and notifies
- * both the receiver UI and the car launcher.
+ * the dashboard + receiver UI inside this single app.
  *
- * The launcher listens for {@link #ACTION_PHONE_CONNECTED} so it can
- * hand over to the receiver automatically.
+ * The dashboard opens on connect and returns to the head unit's default
+ * launcher on disconnect (see {@link #isReturnHomeEnabled}).
  */
 public final class ConnectionMonitor {
 
@@ -25,6 +25,7 @@ public final class ConnectionMonitor {
     private static final String KEY_AUTO_LAUNCH = "auto_launch";
     private static final String KEY_KEEP_SCREEN_ON = "keep_screen_on";
     private static final String KEY_START_SERVICE = "start_service";
+    private static final String KEY_RETURN_HOME = "return_home";
 
     private ConnectionMonitor() {}
 
@@ -32,14 +33,14 @@ public final class ConnectionMonitor {
         Intent i = new Intent(ACTION_PHONE_CONNECTED);
         i.putExtra(EXTRA_TYPE, type);
         i.putExtra(EXTRA_DEVICE, deviceName == null ? "" : deviceName);
-        // Explicit package so the launcher receives it without a global broadcast leak.
-        i.setPackage("com.t3.carlauncher");
+        // Same app now — deliver to our own package only.
+        i.setPackage(ctx.getPackageName());
         ctx.sendBroadcast(i);
     }
 
     public static void onPhoneDisconnected(Context ctx) {
         Intent i = new Intent(ACTION_PHONE_DISCONNECTED);
-        i.setPackage("com.t3.carlauncher");
+        i.setPackage(ctx.getPackageName());
         ctx.sendBroadcast(i);
     }
 
@@ -65,6 +66,15 @@ public final class ConnectionMonitor {
 
     public static void setStartServiceEnabled(Context ctx, boolean v) {
         prefs(ctx).edit().putBoolean(KEY_START_SERVICE, v).apply();
+    }
+
+    /** When true (default), disconnect returns the user to the default launcher. */
+    public static boolean isReturnHomeEnabled(Context ctx) {
+        return prefs(ctx).getBoolean(KEY_RETURN_HOME, true);
+    }
+
+    public static void setReturnHomeEnabled(Context ctx, boolean v) {
+        prefs(ctx).edit().putBoolean(KEY_RETURN_HOME, v).apply();
     }
 
     private static SharedPreferences prefs(Context ctx) {

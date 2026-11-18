@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Bluetooth: detect phone connect (A2DP/HFP) and auto-open receiver -->
+    <!-- Bluetooth: detect phone connect (A2DP/HFP) and auto-open dashboard -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
@@ -26,6 +26,9 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
 
+    <!-- App drawer lists installed apps -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -33,6 +36,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="false">
 
+        <!-- Receiver UI (Android-Auto-style tabs) -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -50,12 +54,23 @@
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
-            <!-- Auto-open when the launcher tells us a phone connected -->
-            <intent-filter>
-                <action android:name="com.t3.autoreceiver.LAUNCH_RECEIVER" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </activity>
+
+        <!-- Dashboard: opens ONLY when a phone connects.
+             Deliberately NOT a HOME launcher — the head unit's built-in
+             launcher stays the default. On disconnect we return to it. -->
+        <activity
+            android:name=".LauncherActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+
+        <activity
+            android:name=".AppDrawerActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
 
         <service
             android:name=".ReceiverService"

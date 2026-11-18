@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">T3 Auto Receiver</string>
+    <string name="app_name">T3 Auto</string>
     <string name="status_waiting">Waiting for phone…</string>
     <string name="status_usb">Phone connected via USB</string>
     <string name="status_bt">Phone connected via Bluetooth</string>
@@ -11,9 +11,22 @@
     <string name="tab_settings">Settings</string>
     <string name="btn_mirror">Screen mirror help</string>
     <string name="btn_hotspot">Turn on hotspot</string>
-    <string name="btn_launcher">Open car launcher</string>
-    <string name="pref_auto_launch">Auto-open on USB / Bluetooth connect</string>
+    <string name="btn_launcher">Open dashboard</string>
+    <string name="pref_auto_launch">Auto-open dashboard on USB / Bluetooth connect</string>
     <string name="pref_keep_screen_on">Keep screen on while connected</string>
     <string name="pref_start_service">Start receiver service on boot</string>
+    <string name="pref_return_home">Return to default launcher when phone disconnects</string>
     <string name="note_carplay">iPhone: true CarPlay needs a Carlinkit-style USB dongle (Apple MFi). Bluetooth audio + USB charging work without it.</string>
+    <string name="tile_receiver">Auto Receiver</string>
+    <string name="tile_nav">Navigate</string>
+    <string name="tile_music">Music</string>
+    <string name="tile_phone">Phone</string>
+    <string name="tile_radio">Radio</string>
+    <string name="tile_apps">All apps</string>
+    <string name="tile_wifi">Wi-Fi</string>
+    <string name="tile_bt">Bluetooth</string>
+    <string name="tile_hotspot">Hotspot</string>
+    <string name="tile_brightness">Brightness</string>
+    <string name="phone_connected">Phone connected — opening dashboard…</string>
+    <string name="phone_disconnected">Phone disconnected</string>
 </resources>

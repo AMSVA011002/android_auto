@@ -10,3 +10,4 @@ captures/
 .cxx/
 *.apk
 !*.apk.example
+!build-output/*.apk

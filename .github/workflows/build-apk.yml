@@ -3,6 +3,8 @@ name: Build T3 Auto APK
 on:
   push:
     branches: [main, "arena/*"]
+    paths-ignore:
+      - "build-output/**"
   workflow_dispatch:
 
 jobs:
@@ -40,8 +42,21 @@ jobs:
       - name: Build debug APK
         run: gradle assembleDebug --no-daemon
 
-      - name: Upload APK
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: t3-auto
           path: app/build/outputs/apk/debug/*.apk
+
+      # Artifact blobs are not always reachable from other tools, so also
+      # commit the built APK into the repo under build-output/.
+      - name: Publish APK to build-output/
+        run: |
+          mkdir -p build-output
+          cp app/build/outputs/apk/debug/*.apk build-output/t3-auto-debug.apk
+          ls -l build-output/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add build-output/t3-auto-debug.apk
+          git commit -m "CI: publish t3-auto-debug.apk [skip ci]" || echo "no changes"
+          git push

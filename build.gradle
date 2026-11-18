@@ -1,0 +1,16 @@
+// Top-level build file — T3 Auto (receiver + launcher)
+// Device target: Allwinner T3 / K2001N (sun8iw11p1), 1024x600 @ 160dpi, 1 GB RAM.
+// Pure-framework UI (no Compose / no heavy libs) keeps APKs small for the low-RAM head unit.
+plugins {
+    id 'com.android.application' version '8.2.0' apply false
+}
+
+ext {
+    compileSdk = 34
+    minSdk = 21          // covers old T3 firmware bases; device reports Android 13
+    targetSdk = 33       // Android 13 on this head unit
+}
+
+tasks.register('clean', Delete) {
+    delete rootProject.layout.buildDirectory
+}

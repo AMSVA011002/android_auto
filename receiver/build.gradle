@@ -1,0 +1,40 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.t3.autoreceiver'
+    compileSdk rootProject.ext.compileSdk
+
+    defaultConfig {
+        applicationId "com.t3.autoreceiver"
+        minSdk rootProject.ext.minSdk
+        targetSdk rootProject.ext.targetSdk
+        versionCode 1
+        versionName "1.0.0"
+        // 1024x600 @ 160dpi head unit — mdpi baseline, no density splits needed
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    packagingOptions {
+        resources {
+            excludes += ['/META-INF/{DEPENDENCIES,LICENSE,LICENSE.txt,NOTICE,NOTICE.txt}']
+        }
+    }
+}
+
+// No third-party deps on purpose: pure framework keeps the APK small
+// enough for the 1 GB RAM T3 and avoids Maven fetch failures.
+dependencies {
+}

@@ -10,8 +10,13 @@ Auto / CarPlay can and cannot do as a sideloaded app.
 
 | Screen | When it shows |
 |---|---|
-| **Dashboard** (clock, big tiles, quick toggles) | Opens **only when a phone connects** over USB or Bluetooth. |
-| **Receiver UI** (Auto-style Home / Navigate / Music / Phone / Settings) | Opened from the dashboard's *Auto Receiver* tile, or directly. |
+| **Android Auto (ZLink)** | Opens **automatically when a phone connects**. This is the real Android Auto UI — Maps, media, messages — because your unit ships ZLink (`com.zjinnova.zlink`) as its licensed projection engine. |
+| **Dashboard** (clock, big tiles, quick toggles) | Fallback when no projection engine is installed. |
+| **Controls** (Auto-style Home / Navigate / Music / Phone / Settings) | Manual fallback from the dashboard's *My Dashboard* tile. |
+
+**Read [docs/PROTOCOL-NOTES.md](docs/PROTOCOL-NOTES.md) first.** It explains why
+this app opens ZLink rather than trying to draw Android Auto itself — and why
+the previous build's USB handshake was stopping Android Auto from working.
 
 **Your head unit's own launcher stays the default home screen.** This app
 never registers as `CATEGORY_HOME`, so it is not a replacement home screen:
@@ -22,10 +27,10 @@ never registers as `CATEGORY_HOME`, so it is not a replacement home screen:
   on by default).
 - Nothing connected → the built-in launcher is what you see, as normal.
 
-> **iPhone note:** true CarPlay needs Apple's MFi licence — it can't be a
-> plain APK. Use a Carlinkit-style USB dongle for CarPlay (the dashboard
-> auto-opens when it's plugged in). Without a dongle, iPhones work for
-> Bluetooth music/calls + USB charging.
+> **iPhone note:** CarPlay is handled by ZLink too, on units whose ZLink licence
+> includes it (this "Ultimate" firmware does). Plug in the iPhone and the same
+> handoff opens ZLink, which switches to CarPlay. If your ZLink build is
+> Android-Auto-only, a Carlinkit-style dongle provides CarPlay.
 
 ## Build
 
@@ -81,9 +86,9 @@ adb reboot
 
 ## Usage
 
-- **Android phone, USB:** plug in → dashboard opens. For on-screen Maps,
-  use *Screen mirror help* (Receiver → Home tab) — hotspot + mirroring app,
-  or scrcpy from a PC.
+- **Android phone, USB:** plug in with a *data* cable → Android Auto opens by
+  itself (via ZLink). No mirroring, no phone screen copying — the phone renders
+  the car UI and the head unit shows it, exactly like the reference screenshot.
 - **Any phone, Bluetooth:** pair once → music and hands-free calls route
   to the head unit; dashboard opens on connect.
 - **iPhone + Carlinkit dongle:** plug the dongle into USB → dashboard
@@ -92,9 +97,13 @@ adb reboot
 
 ## Troubleshooting (1 GB RAM head unit)
 
-- **Dashboard doesn't auto-open:** check Receiver → Settings → *Auto-open*
-  is on, and that the service notification is showing. Some T3 firmwares
-  kill background apps — the system-app install above fixes this.
+- **Nothing opens on connect:** check Controls → Settings → *Open Android Auto
+  (ZLink) when a phone connects* is on, and that ZLink itself launches by hand
+  (`adb shell am start -a zjinnova.android.intent.action.ZLINK_MAIN --es page LINK`).
+- **ZLink opens but shows "no device":** the phone has not entered Android Auto
+  mode — use a data cable, unlock the phone, and accept the Android Auto prompt.
+- **Dashboard doesn't auto-open:** verify the service notification is showing.
+  Some T3 firmwares kill background apps — the system-app install above fixes this.
 - **Phone not detected over USB:** try a different cable/port (charge-only
   cables are the #1 cause). Add your phone's USB VID to
   `app/src/main/res/xml/device_filter.xml` if needed.

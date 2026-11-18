@@ -15,10 +15,10 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 /**
- * Receiver UI — Android-Auto-style tabs (Home / Navigate / Music / Phone / Settings)
+ * Companion screen with Android-Auto-style tabs (Home / Navigate / Music / Phone / Settings).
  * sized for the 1024x600 head unit. Part of the single T3 Auto app: the
- * dashboard ({@link LauncherActivity}) opens on USB/Bluetooth connect and the
- * user drills into this screen from its "Auto Receiver" tile.
+ * primary action hands over to {@link ProjectionBridge} (ZLink) for genuine
+ * Android Auto; the tabs here are the offline/fallback controls.
  */
 public class MainActivity extends Activity {
 
@@ -26,7 +26,7 @@ public class MainActivity extends Activity {
     private TextView deviceText;
     private View statusDot;
     private View pageHome, pageNav, pageMusic, pagePhone, pageSettings;
-    private CheckBox prefAutoLaunch, prefKeepScreenOn, prefStartService, prefReturnHome;
+    private CheckBox prefAutoLaunch, prefKeepScreenOn, prefStartService, prefReturnHome, prefPreferEngine;
 
     private final BroadcastReceiver connReceiver = new BroadcastReceiver() {
         @Override
@@ -70,6 +70,7 @@ public class MainActivity extends Activity {
         findViewById(R.id.tabSettings).setOnClickListener(v -> showPage(pageSettings));
 
         // Home actions
+        findViewById(R.id.btnAndroidAuto).setOnClickListener(v -> openAndroidAuto());
         findViewById(R.id.btnMirror).setOnClickListener(v -> MirrorHelper.showMirrorHelp(this));
         findViewById(R.id.btnHotspot).setOnClickListener(v -> {
             if (!MirrorHelper.tryEnableHotspot(this)) {
@@ -91,6 +92,9 @@ public class MainActivity extends Activity {
                 v -> MirrorHelper.sendMediaKey(this, KeyEvent.KEYCODE_MEDIA_NEXT));
 
         // Settings
+        prefPreferEngine = findViewById(R.id.prefPreferEngine);
+        prefPreferEngine.setChecked(ConnectionMonitor.isPreferEngine(this));
+        prefPreferEngine.setOnCheckedChangeListener((b, on) -> ConnectionMonitor.setPreferEngine(this, on));
         prefAutoLaunch = findViewById(R.id.prefAutoLaunch);
         prefKeepScreenOn = findViewById(R.id.prefKeepScreenOn);
         prefStartService = findViewById(R.id.prefStartService);
@@ -155,6 +159,14 @@ public class MainActivity extends Activity {
     protected void onPause() {
         try { unregisterReceiver(connReceiver); } catch (Exception ignored) {}
         super.onPause();
+    }
+
+    /** Launches the real Android Auto engine (ZLink) on this unit. */
+    private void openAndroidAuto() {
+        if (!ProjectionBridge.open(this)) {
+            deviceText.setText(R.string.aa_missing);
+            MirrorHelper.showMirrorHelp(this);
+        }
     }
 
     private void showPage(View page) {

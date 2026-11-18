@@ -46,11 +46,9 @@ public class BluetoothReceiver extends BroadcastReceiver {
 
     private void launchDashboard(Context ctx) {
         try {
-            Intent i = new Intent(ctx, LauncherActivity.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            ctx.startActivity(i);
+            ConnectionMonitor.openProjection(ctx);
         } catch (Exception e) {
-            Log.w(TAG, "Could not auto-launch dashboard", e);
+            Log.w(TAG, "Could not auto-launch projection", e);
         }
     }
 }

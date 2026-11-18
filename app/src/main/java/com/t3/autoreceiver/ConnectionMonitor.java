@@ -8,8 +8,10 @@ import android.content.SharedPreferences;
  * Tracks the current phone connection (USB or Bluetooth) and notifies
  * the dashboard + receiver UI inside this single app.
  *
- * The dashboard opens on connect and returns to the head unit's default
- * launcher on disconnect (see {@link #isReturnHomeEnabled}).
+ * A phone connection opens the projection engine (ZLink) when available, so
+ * the driver gets genuine Android Auto; the in-app dashboard is the fallback.
+ * On disconnect we return to the head unit's default launcher
+ * (see {@link #isReturnHomeEnabled}).
  */
 public final class ConnectionMonitor {
 
@@ -26,6 +28,7 @@ public final class ConnectionMonitor {
     private static final String KEY_KEEP_SCREEN_ON = "keep_screen_on";
     private static final String KEY_START_SERVICE = "start_service";
     private static final String KEY_RETURN_HOME = "return_home";
+    private static final String KEY_PREFER_ENGINE = "prefer_engine";
 
     private ConnectionMonitor() {}
 
@@ -66,6 +69,32 @@ public final class ConnectionMonitor {
 
     public static void setStartServiceEnabled(Context ctx, boolean v) {
         prefs(ctx).edit().putBoolean(KEY_START_SERVICE, v).apply();
+    }
+
+    /**
+     * When true (default), a phone connection opens the head unit's projection
+     * engine (ZLink → genuine Android Auto) instead of our own dashboard.
+     */
+    public static boolean isPreferEngine(Context ctx) {
+        return prefs(ctx).getBoolean(KEY_PREFER_ENGINE, true);
+    }
+
+    public static void setPreferEngine(Context ctx, boolean v) {
+        prefs(ctx).edit().putBoolean(KEY_PREFER_ENGINE, v).apply();
+    }
+
+    /**
+     * Single entry point used by every trigger: prefer the real projection
+     * engine, fall back to our dashboard when none is installed or the user
+     * turned the preference off.
+     */
+    public static void openProjection(Context ctx) {
+        if (isPreferEngine(ctx) && ProjectionBridge.open(ctx)) return;
+        try {
+            Intent i = new Intent(ctx, LauncherActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            ctx.startActivity(i);
+        } catch (Exception ignored) {}
     }
 
     /** When true (default), disconnect returns the user to the default launcher. */

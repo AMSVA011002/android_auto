@@ -19,9 +19,10 @@ import java.util.Locale;
 /**
  * Dashboard for the 1024x600 head unit.
  *
- * This is NOT a HOME launcher: it opens only when a phone connects
- * (USB/Bluetooth) and returns to the head unit's default launcher when
- * the phone disconnects. The built-in launcher always stays the default.
+ * Its primary tile opens the head unit's projection engine (ZLink), which is
+ * the real Android Auto experience. This is NOT a HOME launcher: it opens when
+ * a phone connects and returns to the head unit's default launcher on
+ * disconnect.
  */
 public class LauncherActivity extends Activity {
 
@@ -64,6 +65,7 @@ public class LauncherActivity extends Activity {
         dateText = findViewById(R.id.dateText);
         connText = findViewById(R.id.connText);
 
+        findViewById(R.id.tileAndroidAuto).setOnClickListener(v -> openAndroidAuto());
         findViewById(R.id.tileReceiver).setOnClickListener(v -> openReceiver());
         findViewById(R.id.tileNav).setOnClickListener(v -> openMaps());
         findViewById(R.id.tileMusic).setOnClickListener(v -> openMusic());
@@ -83,6 +85,14 @@ public class LauncherActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        // Show which Android Auto engine this unit has.
+        TextView aaStatus = findViewById(R.id.aaStatus);
+        if (aaStatus != null) {
+            String engine = ProjectionBridge.engineLabel(this);
+            aaStatus.setText(engine != null
+                    ? "Android Auto engine: " + engine
+                    : getString(R.string.aa_missing));
+        }
         handler.post(clockTick);
         IntentFilter f = new IntentFilter();
         f.addAction(ConnectionMonitor.ACTION_PHONE_CONNECTED);
@@ -101,6 +111,13 @@ public class LauncherActivity extends Activity {
         Date now = new Date();
         clockText.setText(new SimpleDateFormat("HH:mm", Locale.getDefault()).format(now));
         dateText.setText(new SimpleDateFormat("EEE, d MMM", Locale.getDefault()).format(now));
+    }
+
+    /** Opens the real Android Auto engine (ZLink) full-screen. */
+    private void openAndroidAuto() {
+        if (!ProjectionBridge.open(this)) {
+            Toast.makeText(this, R.string.aa_missing, Toast.LENGTH_LONG).show();
+        }
     }
 
     private void openReceiver() {

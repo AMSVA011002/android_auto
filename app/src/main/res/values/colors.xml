@@ -6,4 +6,5 @@
     <color name="text_primary">#FFFFFFFF</color>
     <color name="text_secondary">#FFB0BEC5</color>
     <color name="divider">#FF2A3441</color>
+    <color name="aa_green">#3DDC84</color>
 </resources>

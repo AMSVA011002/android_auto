@@ -47,13 +47,11 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!-- Auto-open when a phone/dongle is plugged in via USB -->
-            <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-            </intent-filter>
-            <meta-data
-                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-                android:resource="@xml/device_filter" />
+            <!-- NOTE: no USB_DEVICE_ATTACHED filter here on purpose.
+                 It would make Android show an app chooser every time a phone is
+                 plugged in and pull the device away from ZLink (the real
+                 Android Auto engine). Our UsbReceiver watches the broadcast
+                 instead and simply opens ZLink. -->
         </activity>
 
         <!-- Dashboard: opens ONLY when a phone connects.

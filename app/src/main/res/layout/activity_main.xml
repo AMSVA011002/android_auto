@@ -61,7 +61,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Android Auto Receiver"
+                    android:text="T3 Auto"
                     android:textSize="26sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary" />
@@ -70,14 +70,25 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Plug in your phone (USB) or connect Bluetooth — this screen opens automatically."
+                    android:text="Plug in your phone or connect Bluetooth — Android Auto opens automatically."
                     android:textSize="15sp"
                     android:textColor="@color/text_secondary" />
+
+                <Button
+                    android:id="@+id/btnAndroidAuto"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="16dp"
+                    android:backgroundTint="@color/aa_green"
+                    android:textColor="@color/bg_dark"
+                    android:textStyle="bold"
+                    android:text="@string/btn_open_aa"
+                    android:textSize="22sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="12dp"
                     android:orientation="horizontal">
 
                     <Button
@@ -265,6 +276,15 @@
                     android:textSize="26sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary" />
+
+                <CheckBox
+                    android:id="@+id/prefPreferEngine"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/pref_prefer_engine"
+                    android:textSize="16sp"
+                    android:checked="true" />
 
                 <CheckBox
                     android:id="@+id/prefAutoLaunch"

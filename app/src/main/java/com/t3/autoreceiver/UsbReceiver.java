@@ -9,10 +9,14 @@ import android.os.Build;
 import android.util.Log;
 
 /**
- * Auto-opens the dashboard when a phone (or Carlinkit dongle) is plugged in.
- * Also handles the AOA handshake so the phone can identify this head unit.
- * The dashboard only runs while connected — on detach the activities
- * return to the head unit's default launcher.
+ * Detects a plugged-in phone and hands the screen to the head unit's
+ * projection engine (ZLink → real Android Auto).
+ *
+ * IMPORTANT: this receiver deliberately does NOT open the USB device and does
+ * NOT perform an AOA handshake. Claiming the accessory makes the phone think it
+ * is talking to an unlicensed accessory, which drops it out of Android Auto and
+ * leaves ZLink with nothing to show — that was the "app opens but nothing works"
+ * symptom. ZLink owns the USB device; we only react to the attach event.
  */
 public class UsbReceiver extends BroadcastReceiver {
 
@@ -30,20 +34,10 @@ public class UsbReceiver extends BroadcastReceiver {
             String name = device != null ? device.getDeviceName() : "USB device";
             Log.i(TAG, "USB attached: " + name);
 
-            // AOA handshake (best effort) so the phone sees us as a head unit.
-            try {
-                AoaHelper aoa = new AoaHelper(ctx);
-                if (aoa.open(device)) {
-                    Log.i(TAG, "AOA accessory opened");
-                }
-            } catch (Exception e) {
-                Log.w(TAG, "AOA handshake failed (expected on non-AOA phones)", e);
-            }
-
             ConnectionMonitor.onPhoneConnected(ctx, ConnectionMonitor.TYPE_USB, name);
 
             if (ConnectionMonitor.isAutoLaunchEnabled(ctx)) {
-                launchDashboard(ctx);
+                launchProjection(ctx);
             }
         } else if (ACTION_DETACHED.equals(action)) {
             Log.i(TAG, "USB detached");
@@ -58,13 +52,12 @@ public class UsbReceiver extends BroadcastReceiver {
         return intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
     }
 
-    private void launchDashboard(Context ctx) {
+    /** Opens ZLink (Android Auto) directly; falls back to our dashboard. */
+    private void launchProjection(Context ctx) {
         try {
-            Intent i = new Intent(ctx, LauncherActivity.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            ctx.startActivity(i);
+            ConnectionMonitor.openProjection(ctx);
         } catch (Exception e) {
-            Log.w(TAG, "Could not auto-launch dashboard", e);
+            Log.w(TAG, "Could not auto-launch projection", e);
         }
     }
 }

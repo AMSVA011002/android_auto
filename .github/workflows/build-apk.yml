@@ -38,26 +38,7 @@ jobs:
         run: gradle wrapper --gradle-version 8.5 --no-daemon
 
       - name: Build debug APKs
-        run: |
-          set +e
-          gradle assembleDebug --no-daemon --stacktrace 2>&1 | tee build.log
-          exit ${PIPESTATUS[0]}
-
-      - name: Upload build log (for debugging)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-log
-          path: build.log
-
-      - name: Report build errors as annotations
-        if: always()
-        run: |
-          if [ -f build.log ]; then
-            grep -iE "What went wrong|error:|FAILED|Could not|Execution failed|A problem occurred|e: |warning: " build.log | head -40 | while IFS= read -r line; do
-              echo "::error::GRADLEERR: $line"
-            done
-          fi
+        run: gradle assembleDebug --no-daemon
 
       - name: Upload receiver APK
         uses: actions/upload-artifact@v4

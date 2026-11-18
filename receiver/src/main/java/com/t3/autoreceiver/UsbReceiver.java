@@ -31,8 +31,7 @@ public class UsbReceiver extends BroadcastReceiver {
             // AOA handshake (best effort) so the phone sees us as a head unit.
             try {
                 AoaHelper aoa = new AoaHelper(ctx);
-                if (aoa.getAccessory() != null) {
-                    aoa.open();
+                if (aoa.open(device)) {
                     Log.i(TAG, "AOA accessory opened");
                 }
             } catch (Exception e) {

@@ -1,4 +1,4 @@
-package com.t3.carlauncher;
+package com.t3.autoreceiver;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;

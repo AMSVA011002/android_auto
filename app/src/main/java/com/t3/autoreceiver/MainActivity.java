@@ -16,8 +16,9 @@ import android.widget.TextView;
 
 /**
  * Receiver UI — Android-Auto-style tabs (Home / Navigate / Music / Phone / Settings)
- * sized for the 1024x600 head unit. Auto-opens on USB/Bluetooth connect via
- * {@link UsbReceiver} / {@link BluetoothReceiver}.
+ * sized for the 1024x600 head unit. Part of the single T3 Auto app: the
+ * dashboard ({@link LauncherActivity}) opens on USB/Bluetooth connect and the
+ * user drills into this screen from its "Auto Receiver" tile.
  */
 public class MainActivity extends Activity {
 
@@ -25,7 +26,7 @@ public class MainActivity extends Activity {
     private TextView deviceText;
     private View statusDot;
     private View pageHome, pageNav, pageMusic, pagePhone, pageSettings;
-    private CheckBox prefAutoLaunch, prefKeepScreenOn, prefStartService;
+    private CheckBox prefAutoLaunch, prefKeepScreenOn, prefStartService, prefReturnHome;
 
     private final BroadcastReceiver connReceiver = new BroadcastReceiver() {
         @Override
@@ -38,6 +39,11 @@ public class MainActivity extends Activity {
                 showConnected(type, dev);
             } else if (ConnectionMonitor.ACTION_PHONE_DISCONNECTED.equals(a)) {
                 showDisconnected();
+                // Receiver only runs while connected — return to the
+                // head unit's default launcher.
+                if (ConnectionMonitor.isReturnHomeEnabled(ctx)) {
+                    goHome();
+                }
             }
         }
     };
@@ -88,15 +94,18 @@ public class MainActivity extends Activity {
         prefAutoLaunch = findViewById(R.id.prefAutoLaunch);
         prefKeepScreenOn = findViewById(R.id.prefKeepScreenOn);
         prefStartService = findViewById(R.id.prefStartService);
+        prefReturnHome = findViewById(R.id.prefReturnHome);
         prefAutoLaunch.setChecked(ConnectionMonitor.isAutoLaunchEnabled(this));
         prefKeepScreenOn.setChecked(ConnectionMonitor.isKeepScreenOn(this));
         prefStartService.setChecked(ConnectionMonitor.isStartServiceEnabled(this));
+        prefReturnHome.setChecked(ConnectionMonitor.isReturnHomeEnabled(this));
         prefAutoLaunch.setOnCheckedChangeListener((b, on) -> ConnectionMonitor.setAutoLaunchEnabled(this, on));
         prefKeepScreenOn.setOnCheckedChangeListener((b, on) -> {
             ConnectionMonitor.setKeepScreenOn(this, on);
             MirrorHelper.keepScreenOn(this, on);
         });
         prefStartService.setOnCheckedChangeListener((b, on) -> ConnectionMonitor.setStartServiceEnabled(this, on));
+        prefReturnHome.setOnCheckedChangeListener((b, on) -> ConnectionMonitor.setReturnHomeEnabled(this, on));
 
         MirrorHelper.keepScreenOn(this, ConnectionMonitor.isKeepScreenOn(this));
 
@@ -168,5 +177,14 @@ public class MainActivity extends Activity {
         statusDot.setBackgroundResource(R.drawable.dot_gray);
         statusText.setText(R.string.status_disconnected);
         deviceText.setText("");
+    }
+
+    private void goHome() {
+        try {
+            Intent i = new Intent(Intent.ACTION_MAIN);
+            i.addCategory(Intent.CATEGORY_HOME);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
+        } catch (Exception ignored) {}
     }
 }

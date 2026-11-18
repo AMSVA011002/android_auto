@@ -1,4 +1,4 @@
-name: Build T3 Auto APKs
+name: Build T3 Auto APK
 
 on:
   push:
@@ -37,17 +37,11 @@ jobs:
       - name: Generate gradle wrapper (jar not committed)
         run: gradle wrapper --gradle-version 8.5 --no-daemon
 
-      - name: Build debug APKs
+      - name: Build debug APK
         run: gradle assembleDebug --no-daemon
 
-      - name: Upload receiver APK
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: t3-auto-receiver
-          path: receiver/build/outputs/apk/debug/*.apk
-
-      - name: Upload launcher APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: t3-car-launcher
-          path: launcher/build/outputs/apk/debug/*.apk
+          name: t3-auto
+          path: app/build/outputs/apk/debug/*.apk

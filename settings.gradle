@@ -13,4 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "T3Auto"
-include ':receiver', ':launcher'
+include ':app'

@@ -290,11 +290,19 @@
                     android:textSize="16sp"
                     android:checked="true" />
 
+                <CheckBox
+                    android:id="@+id/prefReturnHome"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pref_return_home"
+                    android:textSize="16sp"
+                    android:checked="true" />
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Tip: on this rooted T3 you can move both APKs to /system/app (or /system/priv-app) so they survive factory resets. See README."
+                    android:text="Tip: on this rooted T3 you can move the APK to /system/app (or /system/priv-app) so it survives factory resets. See README."
                     android:textSize="13sp"
                     android:textColor="@color/text_secondary" />
             </LinearLayout>

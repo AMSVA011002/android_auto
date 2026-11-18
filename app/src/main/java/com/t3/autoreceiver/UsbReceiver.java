@@ -9,8 +9,10 @@ import android.os.Build;
 import android.util.Log;
 
 /**
- * Auto-opens the receiver when a phone (or Carlinkit dongle) is plugged in.
+ * Auto-opens the dashboard when a phone (or Carlinkit dongle) is plugged in.
  * Also handles the AOA handshake so the phone can identify this head unit.
+ * The dashboard only runs while connected — on detach the activities
+ * return to the head unit's default launcher.
  */
 public class UsbReceiver extends BroadcastReceiver {
 
@@ -41,7 +43,7 @@ public class UsbReceiver extends BroadcastReceiver {
             ConnectionMonitor.onPhoneConnected(ctx, ConnectionMonitor.TYPE_USB, name);
 
             if (ConnectionMonitor.isAutoLaunchEnabled(ctx)) {
-                launchReceiver(ctx);
+                launchDashboard(ctx);
             }
         } else if (ACTION_DETACHED.equals(action)) {
             Log.i(TAG, "USB detached");
@@ -56,13 +58,13 @@ public class UsbReceiver extends BroadcastReceiver {
         return intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
     }
 
-    private void launchReceiver(Context ctx) {
+    private void launchDashboard(Context ctx) {
         try {
-            Intent i = new Intent(ctx, MainActivity.class);
+            Intent i = new Intent(ctx, LauncherActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             ctx.startActivity(i);
         } catch (Exception e) {
-            Log.w(TAG, "Could not auto-launch receiver", e);
+            Log.w(TAG, "Could not auto-launch dashboard", e);
         }
     }
 }

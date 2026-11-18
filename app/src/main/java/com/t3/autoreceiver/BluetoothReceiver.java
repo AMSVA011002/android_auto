@@ -8,9 +8,10 @@ import android.content.Intent;
 import android.util.Log;
 
 /**
- * Auto-opens the receiver when a phone connects over Bluetooth
+ * Auto-opens the dashboard when a phone connects over Bluetooth
  * (A2DP music / HFP hands-free). This is how Android phones and iPhones
  * connect for audio + calls without any dongle.
+ * On disconnect the activities return to the default launcher.
  */
 public class BluetoothReceiver extends BroadcastReceiver {
 
@@ -32,7 +33,7 @@ public class BluetoothReceiver extends BroadcastReceiver {
             Log.i(TAG, "Bluetooth connected: " + name);
             ConnectionMonitor.onPhoneConnected(ctx, ConnectionMonitor.TYPE_BT, name);
             if (ConnectionMonitor.isAutoLaunchEnabled(ctx)) {
-                launchReceiver(ctx);
+                launchDashboard(ctx);
             }
         } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
             Log.i(TAG, "Bluetooth disconnected");
@@ -43,13 +44,13 @@ public class BluetoothReceiver extends BroadcastReceiver {
         }
     }
 
-    private void launchReceiver(Context ctx) {
+    private void launchDashboard(Context ctx) {
         try {
-            Intent i = new Intent(ctx, MainActivity.class);
+            Intent i = new Intent(ctx, LauncherActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             ctx.startActivity(i);
         } catch (Exception e) {
-            Log.w(TAG, "Could not auto-launch receiver", e);
+            Log.w(TAG, "Could not auto-launch dashboard", e);
         }
     }
 }

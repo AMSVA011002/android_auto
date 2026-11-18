@@ -89,15 +89,14 @@ public final class MirrorHelper {
         }
     }
 
-    /** Opens the companion car launcher (if installed). */
+    /** Opens the in-app dashboard. */
     public static void openLauncher(Context ctx) {
         try {
-            Intent i = new Intent(Intent.ACTION_MAIN);
-            i.setPackage("com.t3.carlauncher");
+            Intent i = new Intent(ctx, LauncherActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             ctx.startActivity(i);
         } catch (Exception e) {
-            Toast.makeText(ctx, "Car launcher not installed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ctx, "Could not open dashboard", Toast.LENGTH_SHORT).show();
         }
     }
 

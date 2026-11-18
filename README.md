@@ -1,25 +1,29 @@
-# T3 Auto — Android Auto Receiver + Car Launcher (Allwinner T3 head unit)
+# T3 Auto — one app for your Allwinner T3 head unit
 
-Two lightweight apps built for your head unit (QUAD-CORE T3 k2001-nwd,
+A single app built for your head unit (QUAD-CORE T3 k2001-nwd,
 Allwinner sun8iw11p1, Cortex-A7 @ 1.2 GHz, Mali-400 MP, 1024×600 @ 160 dpi,
 1 GB RAM, rooted). See [docs/DEVICE.md](docs/DEVICE.md) for the full spec
 and [docs/PROTOCOL-NOTES.md](docs/PROTOCOL-NOTES.md) for what Android
 Auto / CarPlay can and cannot do as a sideloaded app.
 
-## What you get
+## What you get — one app, package `com.t3.autoreceiver`
 
-| App | Package | What it does |
-|---|---|---|
-| **T3 Auto Receiver** (`receiver/`) | `com.t3.autoreceiver` | Auto-opens when a phone connects via **USB cable** or **Bluetooth**. Android-Auto-style UI (Home / Navigate / Music / Phone / Settings), AOA handshake, Bluetooth audio + calls, media controls, hotspot/mirror helpers. Foreground service keeps it alive while driving. |
-| **T3 Car Launcher** (`launcher/`) | `com.t3.carlauncher` | Your home screen. Clock, big app tiles (Receiver, Navigate, Music, Phone, Radio, All apps), quick toggles (Wi-Fi, Bluetooth, hotspot, brightness). Hands over to the receiver automatically when a phone connects. |
+| Screen | When it shows |
+|---|---|
+| **Dashboard** (clock, big tiles, quick toggles) | Opens **only when a phone connects** over USB or Bluetooth. |
+| **Receiver UI** (Auto-style Home / Navigate / Music / Phone / Settings) | Opened from the dashboard's *Auto Receiver* tile, or directly. |
 
-**How the auto-open works:** plug in a phone (USB) or pair Bluetooth →
-`UsbReceiver` / `BluetoothReceiver` fires → receiver opens and broadcasts
-`PHONE_CONNECTED` → launcher receives it and opens the receiver. On boot,
-`BootReceiver` starts the receiver service so this works immediately.
+**Your head unit's own launcher stays the default home screen.** This app
+never registers as `CATEGORY_HOME`, so it is not a replacement home screen:
+
+- Phone connects (USB or Bluetooth) → dashboard opens automatically.
+- Phone disconnects → the app hands the screen back to the built-in
+  launcher (Settings → *Return to default launcher when phone disconnects*,
+  on by default).
+- Nothing connected → the built-in launcher is what you see, as normal.
 
 > **iPhone note:** true CarPlay needs Apple's MFi licence — it can't be a
-> plain APK. Use a Carlinkit-style USB dongle for CarPlay (the receiver
+> plain APK. Use a Carlinkit-style USB dongle for CarPlay (the dashboard
 > auto-opens when it's plugged in). Without a dongle, iPhones work for
 > Bluetooth music/calls + USB charging.
 
@@ -29,8 +33,7 @@ Auto / CarPlay can and cannot do as a sideloaded app.
 
 1. Open this folder in Android Studio.
 2. Let it sync (it generates the Gradle wrapper for you).
-3. Run **receiver** and **launcher** on your head unit, or
-   Build → Build APK(s).
+3. Run **app** on your head unit, or Build → Build APK(s).
 
 ### Option B — Command line
 
@@ -40,74 +43,69 @@ Requires JDK 17 + Android SDK (platform 34, build-tools 34).
 # Generate the wrapper once (jar is not committed):
 gradle wrapper --gradle-version 8.5
 
-# Build both debug APKs:
 ./gradlew assembleDebug
-# → receiver/build/outputs/apk/debug/receiver-debug.apk
-# → launcher/build/outputs/apk/debug/launcher-debug.apk
+# → app/build/outputs/apk/debug/app-debug.apk
 ```
 
 ### Option C — GitHub Actions (no local setup)
 
-Push to this repo (or run the workflow manually) — the
-`Build T3 Auto APKs` workflow builds both APKs and uploads them as
-artifacts you can download and sideload.
+Push to this repo (or run the workflow manually) — the `Build T3 Auto APK`
+workflow builds one APK and uploads it as the `t3-auto` artifact.
 
 ## Install on the T3 head unit
 
 ```bash
-adb install receiver/build/outputs/apk/debug/receiver-debug.apk
-adb install launcher/build/outputs/apk/debug/launcher-debug.apk
+adb install app/build/outputs/apk/debug/app-debug.apk
 ```
 
-1. Open **T3 Auto Receiver** once, grant Bluetooth/location permissions
-   when asked. Leave **Auto-open** and **Start on boot** enabled.
-2. Open **T3 Car Launcher**, then set it as default:
-   Settings → Apps → T3 Car Launcher → *Set as default* (or press Home
-   and choose it when prompted).
-3. Pair your phone once in Bluetooth settings (for music + calls).
-4. Plug in via USB or connect Bluetooth — the receiver opens by itself.
+1. Open **T3 Auto** once and grant Bluetooth/location permissions.
+   Leave **Auto-open** and **Start on boot** enabled.
+2. Pair your phone once in the head unit's Bluetooth settings
+   (for music + calls).
+3. Plug in via USB or connect Bluetooth — the dashboard opens by itself.
+4. Unplug / disconnect — you're returned to your normal head unit launcher.
 
-### Optional: install as system apps (rooted — survives factory reset)
+### Optional: install as a system app (rooted — survives factory reset)
 
 ```bash
 adb root
 adb remount
-adb push receiver-debug.apk /system/app/T3AutoReceiver.apk
-adb push launcher-debug.apk /system/app/T3CarLauncher.apk
+adb push app-debug.apk /system/app/T3Auto.apk
 adb reboot
 ```
 
 ## Usage
 
-- **Android phone, USB:** plug in → receiver opens. For on-screen Maps,
-  use *Screen mirror help* (Home tab) — hotspot + mirroring app, or
-  scrcpy from a PC.
+- **Android phone, USB:** plug in → dashboard opens. For on-screen Maps,
+  use *Screen mirror help* (Receiver → Home tab) — hotspot + mirroring app,
+  or scrcpy from a PC.
 - **Any phone, Bluetooth:** pair once → music and hands-free calls route
-  to the head unit; receiver opens on connect.
-- **iPhone + Carlinkit dongle:** plug the dongle into USB → receiver
+  to the head unit; dashboard opens on connect.
+- **iPhone + Carlinkit dongle:** plug the dongle into USB → dashboard
   opens → CarPlay runs through the dongle.
-- **Music tab:** ▶/❚❚, ◀◀, ▶▶ send media keys to your phone.
+- **Receiver → Music tab:** ▶/❚❚, ◀◀, ▶▶ send media keys to your phone.
 
 ## Troubleshooting (1 GB RAM head unit)
 
-- **Receiver doesn't auto-open:** check Receiver → Settings → *Auto-open*
+- **Dashboard doesn't auto-open:** check Receiver → Settings → *Auto-open*
   is on, and that the service notification is showing. Some T3 firmwares
   kill background apps — the system-app install above fixes this.
 - **Phone not detected over USB:** try a different cable/port (charge-only
   cables are the #1 cause). Add your phone's USB VID to
-  `receiver/src/main/res/xml/device_filter.xml` if needed.
-- **Out of memory / slow:** close unused apps; both apps are designed to
-  run in a few MB. Avoid running a heavy Maps app *and* mirroring at once.
+  `app/src/main/res/xml/device_filter.xml` if needed.
+- **Out of memory / slow:** close unused apps; the app is designed to run
+  in a few MB. Avoid running a heavy Maps app *and* mirroring at once.
 - **Bluetooth name missing:** grant location permission (required for
   Bluetooth on Android 13).
+- **Don't want it to leave on disconnect:** uncheck *Return to default
+  launcher when phone disconnects* in Receiver → Settings.
 
 ## Project layout
 
 ```
-receiver/   T3 Auto Receiver app (USB/BT auto-open, AOA, Auto-style UI)
-launcher/   T3 Car Launcher app (HOME dashboard, toggles, handoff)
+app/        The single T3 Auto app (dashboard, receiver UI, USB/BT detection)
 docs/       Device spec + protocol notes
-.github/workflows/build-apk.yml   CI: builds both APKs on every push
+.github/workflows/build-apk.yml   CI: builds the APK on every push
 ```
 
 ## Private use

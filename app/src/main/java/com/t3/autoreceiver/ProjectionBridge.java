@@ -36,6 +36,10 @@ public final class ProjectionBridge {
     private static final String[][] ENGINES = {
             // package, activity/direct component (null = resolve launcher activity)
             {"com.zjinnova.zlink", null},
+            // Open Headunit: genuine AA receiver, open source, armv7 + USB host.
+            // Works on this T3 if ZLink is removed or its licence expires.
+            {"com.andrerinas.headunitrevived", null},
+            {"com.andrerinas.headunit", null},
             {"com.xyauto.zlink", null},
             {"com.zjinnova.zlink5", null},
             {"com.carlink.app", null},
@@ -64,6 +68,7 @@ public final class ProjectionBridge {
         String pkg = findEngine(ctx);
         if (pkg == null) return null;
         if (pkg.startsWith("com.zjinnova")) return "ZLink";
+        if (pkg.startsWith("com.andrerinas")) return "Open Headunit";
         if (pkg.contains("carlink")) return "CarLink";
         if (pkg.contains("easyconn")) return "EasyConnection";
         if (pkg.contains("carplay")) return "CarPlay";

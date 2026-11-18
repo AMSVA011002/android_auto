@@ -69,6 +69,41 @@ required if your ZLink licence is Android-Auto-only.
 4. Wired Android Auto needs a **data** cable. Charge-only cables are the most
    common cause of "nothing happens".
 
+## If you remove ZLink — read this first
+
+Uninstalling ZLink does **not** make T3 Auto draw Android Auto by itself. A
+sideloaded APK cannot: the head-unit side needs a licensed, Google-signed
+receiver. Removing ZLink therefore changes *nothing* about projection — it only
+removes the thing that currently works.
+
+Two things you lose with it:
+
+- **CarPlay.** No open-source alternative exists (Apple MFi). CarPlay is gone
+  unless you add a Carlinkit-class dongle.
+- **Your paid activation.** ZLink keeps its licence in
+  `/data/data/com.zjinnova.zlink/`. Some NWD/MCU firmware even depends on it for
+  phone-link entry points. Back that folder up before you touch anything.
+
+### The legitimate replacement: Open Headunit
+
+[Open Headunit](https://github.com/andreknieriem/headunit-revived)
+(`com.andrerinas.headunitrevived`) is a genuine Android Auto *receiver* — it
+speaks the real protocol to the phone and renders Google's car UI, the same
+thing ZLink does. It is open source, runs on Android 4.1+, supports USB-OTG and
+ships an `armeabi-v7a` build, which suits this Cortex-A7 T3.
+
+T3 Auto already probes for it: install Open Headunit and the same auto-open
+handoff launches it instead of ZLink. Wireless (in addition to USB) on Android
+Auto 17.4+ needs its "Headunit Server" option or the root workaround described
+in its README.
+
+Caveats: it is a community project, so expect to grant USB permission and to
+tune settings for a 1024×600 screen. It cannot do CarPlay.
+
+**Recommended order:** keep ZLink, use T3 Auto as the auto-opener (it works
+today, CarPlay included). Only move to Open Headunit if ZLink fails or its
+licence ends.
+
 ## Private use
 
 Built for your own vehicle and personal use. ZLink, Android Auto, CarPlay and
